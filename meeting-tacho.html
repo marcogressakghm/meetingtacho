@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Meeting-Tacho</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #111;
+      color: white;
+      padding: 50px;
+    }
+
+    h1 {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      color: #bbbbbb;
+      font-size: 20px;
+      margin-bottom: 40px;
+    }
+
+    .box {
+      background: #1e1e1e;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 650px;
+      margin: 0 auto;
+      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    }
+
+    label {
+      display: block;
+      font-size: 20px;
+      margin-top: 20px;
+      margin-bottom: 8px;
+    }
+
+    input {
+      font-size: 24px;
+      padding: 10px;
+      width: 160px;
+      text-align: center;
+      border-radius: 8px;
+      border: none;
+    }
+
+    .cost {
+      font-size: 72px;
+      font-weight: bold;
+      margin: 40px 0 10px;
+      color: #00ff99;
+    }
+
+    .time {
+      font-size: 32px;
+      color: #cccccc;
+      margin-bottom: 30px;
+    }
+
+    button {
+      font-size: 22px;
+      padding: 14px 26px;
+      margin: 8px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .start {
+      background: #00ff99;
+      color: #111;
+    }
+
+    .stop {
+      background: #ffcc00;
+      color: #111;
+    }
+
+    .reset {
+      background: #ff5555;
+      color: white;
+    }
+
+    .hint {
+      margin-top: 35px;
+      color: #999999;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Meeting-Tacho</h1>
+  <div class="subtitle">Zeigt live, wie viel interne Meetingzeit gerade kostet.</div>
+
+  <div class="box">
+    <label for="people">Anzahl Teilnehmende</label>
+    <input id="people" type="number" value="5" min="1">
+
+    <label for="rate">Ø interner Stundensatz pro Person (€)</label>
+    <input id="rate" type="number" value="75" min="1">
+
+    <div class="cost" id="cost">0,00 €</div>
+    <div class="time" id="time">00:00</div>
+
+    <button class="start" onclick="startTimer()">Start</button>
+    <button class="stop" onclick="stopTimer()">Stopp</button>
+    <button class="reset" onclick="resetTimer()">Reset</button>
+
+    <div class="hint">
+      Tipp: Nutzt nur Durchschnittswerte, keine echten Gehälter einzelner Personen.<br>
+      Das Tool soll Meeting-Awareness schaffen – keine Kontrolle.
+    </div>
+  </div>
+
+  <script>
+    let seconds = 0;
+    let interval = null;
+
+    function updateDisplay() {
+      const people = Number(document.getElementById("people").value);
+      const rate = Number(document.getElementById("rate").value);
+
+      const costPerSecond = (people * rate) / 3600;
+      const totalCost = seconds * costPerSecond;
+
+      document.getElementById("cost").innerText =
+        totalCost.toLocaleString("de-DE", {
+          style: "currency",
+          currency: "EUR"
+        });
+
+      const minutes = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+
+      document.getElementById("time").innerText =
+        String(minutes).padStart(2, "0") + ":" + String(secs).padStart(2, "0");
+    }
+
+    function startTimer() {
+      if (interval) return;
+
+      interval = setInterval(() => {
+        seconds++;
+        updateDisplay();
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(interval);
+      interval = null;
+    }
+
+    function resetTimer() {
+      stopTimer();
+      seconds = 0;
+      updateDisplay();
+    }
+
+    updateDisplay();
+  </script>
+
+</body>
+</html>
